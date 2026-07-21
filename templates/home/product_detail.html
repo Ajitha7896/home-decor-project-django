@@ -1,0 +1,178 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+
+<div class="container my-5">
+
+    <div class="row">
+
+        <div class="col-md-6">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}">
+            {% endif %}
+        </div>
+
+        <div class="col-md-6">
+            <h1>{{ product.name }}</h1>
+            <h3>${{ product.price }}</h3>
+
+            <p class="text-warning mb-1">
+                {% if product.average_rating >= 4.5 %}
+                    ★★★★★
+                {% elif product.average_rating >= 3.5 %}
+                    ★★★★☆
+                {% elif product.average_rating >= 2.5 %}
+                    ★★★☆☆
+                {% elif product.average_rating >= 1.5 %}
+                    ★★☆☆☆
+                {% elif product.average_rating >= 1 %}
+                    ★☆☆☆☆
+                {% else %}
+                    ☆☆☆☆☆
+                {% endif %}
+            </p>
+
+            <p class="small text-muted">
+                {{ product.average_rating }} / 5 
+                | {{ product.review_count }} reviews
+            </p>
+
+            <p>{{ product.description }}</p>
+
+            {% if product.stock > 0 %}
+                <p class="text-success">
+                    <strong>In Stock:</strong> {{ product.stock }} available
+                </p>
+            {% else %}
+                <p class="text-danger">
+                    <strong>Out of Stock</strong>
+                </p>
+            {% endif %}
+
+            <p>
+                This furniture piece is designed to bring comfort, style,
+                and beauty to your home.
+            </p>
+
+            <a href="/products/" class="btn btn-secondary">Back to Products</a>
+
+            {% if product.stock > 0 %}
+                <a href="{% url 'add_to_cart' product.id %}" class="btn btn-dark">
+                    Add to Cart
+                </a>
+            {% else %}
+                <button class="btn btn-danger" disabled>
+                    Out of Stock
+                </button>
+            {% endif %}
+
+            <a 
+                href="{% url 'add_to_wishlist' product.id %}?next={{ request.path }}" 
+                class="btn btn-outline-danger"
+            >
+                Add to Wishlist
+            </a>
+        </div>
+
+    </div>
+
+    <hr class="my-5">
+
+    <div class="row">
+
+        <div class="col-md-6">
+            <h3>Write a Review</h3>
+
+            {% if user.is_authenticated %}
+
+                {% if user_review %}
+                    <div class="alert alert-info">
+                        You already reviewed this product.
+                    </div>
+                {% else %}
+                    <form method="POST" class="card p-4">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label">Rating</label>
+                            <select name="rating" class="form-select" required>
+                                <option value="">Select rating</option>
+                                <option value="5">5 Stars</option>
+                                <option value="4">4 Stars</option>
+                                <option value="3">3 Stars</option>
+                                <option value="2">2 Stars</option>
+                                <option value="1">1 Star</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Your Review</label>
+                            <textarea 
+                                name="review" 
+                                class="form-control" 
+                                rows="4" 
+                                placeholder="Write your review here"
+                                required
+                            ></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-dark">
+                            Submit Review
+                        </button>
+                    </form>
+                {% endif %}
+
+            {% else %}
+
+                <div class="alert alert-warning">
+                    Please <a href="/login/?next={{ request.path }}">login</a> to write a review.
+                </div>
+
+            {% endif %}
+        </div>
+
+        <div class="col-md-6">
+            <h3>Customer Reviews</h3>
+
+            {% if reviews %}
+
+                {% for review in reviews %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5>{{ review.user.username }}</h5>
+
+                        <p class="text-warning mb-1">
+                            {% if review.rating == 5 %}
+                                ★★★★★
+                            {% elif review.rating == 4 %}
+                                ★★★★☆
+                            {% elif review.rating == 3 %}
+                                ★★★☆☆
+                            {% elif review.rating == 2 %}
+                                ★★☆☆☆
+                            {% elif review.rating == 1 %}
+                                ★☆☆☆☆
+                            {% endif %}
+                        </p>
+
+                        <p>{{ review.review }}</p>
+
+                        <small class="text-muted">
+                            {{ review.created_at }}
+                        </small>
+                    </div>
+                </div>
+                {% endfor %}
+
+            {% else %}
+
+                <p>No reviews yet. Be the first to review this product.</p>
+
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

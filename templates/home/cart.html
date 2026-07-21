@@ -1,0 +1,88 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+
+<div class="container my-5">
+    <h1 class="text-center mb-4">Your Cart</h1>
+
+    {% if cart_items %}
+
+    <table class="table table-bordered text-center align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Image</th>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+                <th>Remove</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td>
+                    {% if item.product.image %}
+                    <img src="{{ item.product.image.url }}" width="100" height="80" style="object-fit: cover;">
+                    {% endif %}
+                </td>
+
+                <td>{{ item.product.name }}</td>
+
+                <td>${{ item.product.price }}</td>
+
+                <td>{{ item.product.stock }}</td>
+
+                <td>
+                    <a href="{% url 'decrease_quantity' item.product.id %}" class="btn btn-sm btn-secondary">-</a>
+
+                    <span class="mx-2">{{ item.quantity }}</span>
+
+                    {% if item.quantity < item.product.stock %}
+                        <a href="{% url 'increase_quantity' item.product.id %}" class="btn btn-sm btn-secondary">+</a>
+                    {% else %}
+                        <button class="btn btn-sm btn-secondary" disabled>+</button>
+                    {% endif %}
+                </td>
+
+                <td>${{ item.subtotal }}</td>
+
+                <td>
+                    <a href="{% url 'remove_from_cart' item.product.id %}" class="btn btn-danger btn-sm">
+                        Remove
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="text-end mt-4">
+        <h3>Total: ${{ total_amount }}</h3>
+
+        <a href="{% url 'clear_cart' %}" class="btn btn-danger btn-lg">
+            Clear Cart
+        </a>
+
+        <a href="{% url 'checkout' %}" class="btn btn-dark btn-lg">
+            Checkout
+        </a>
+    </div>
+
+    {% else %}
+
+    <div class="text-center">
+        <h4>Your cart is empty.</h4>
+        <a href="/products/" class="btn btn-dark mt-3">Go to Products</a>
+    </div>
+
+    {% endif %}
+</div>
+
+{% endblock %}
+
+
+
+

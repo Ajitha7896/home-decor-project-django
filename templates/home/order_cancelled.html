@@ -1,0 +1,21 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+
+<div class="container my-5 text-center">
+    <h1>Order Cancelled Successfully</h1>
+
+    <p>Your order has been cancelled.</p>
+
+    <div class="card mx-auto mt-4" style="max-width: 500px;">
+        <div class="card-body">
+            <p><strong>Order ID:</strong> {{ order.id }}</p>
+            <p><strong>Name:</strong> {{ order.customer_name }}</p>
+            <p><strong>Status:</strong> {{ order.status }}</p>
+        </div>
+    </div>
+
+    <a href="/products/" class="btn btn-dark mt-4">Continue Shopping</a>
+</div>
+
+{% endblock %}
