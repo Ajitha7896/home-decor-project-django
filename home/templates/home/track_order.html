@@ -1,0 +1,155 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+
+<div class="container my-5">
+    <h1 class="text-center mb-4">Track Your Order</h1>
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+
+            <form method="POST" class="card p-4">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Order ID</label>
+                    <input type="number" name="order_id" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" name="email" class="form-control" required>
+                </div>
+
+                <button type="submit" class="btn btn-dark">
+                    Track Order
+                </button>
+            </form>
+
+            {% if error %}
+            <div class="alert alert-danger mt-4">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            {% if order %}
+            <div class="card mt-4">
+                <div class="card-body">
+
+                    <h4>Order Details</h4>
+
+                    <p><strong>Order ID:</strong> {{ order.id }}</p>
+                    <p><strong>Name:</strong> {{ order.customer_name }}</p>
+                    <p><strong>Email:</strong> {{ order.email }}</p>
+                    <p><strong>Phone:</strong> {{ order.phone }}</p>
+                    <p><strong>Payment Method:</strong> {{ order.payment_method }}</p>
+                    <p><strong>Status:</strong> {{ order.status }}</p>
+                    <p><strong>Order Date:</strong> {{ order.order_date }}</p>
+
+                    <hr>
+
+                    <h5 class="mb-3">Order Progress</h5>
+
+                    {% if order.status == "Cancelled" %}
+
+                        <div class="alert alert-danger">
+                            This order has been cancelled.
+                        </div>
+
+                    {% else %}
+
+                        <div class="order-progress-wrapper">
+
+                            <div class="order-progress-line"></div>
+
+                            <div class="order-step {% if order.status == 'Pending' or order.status == 'Processing' or order.status == 'Shipped' or order.status == 'Delivered' %}active{% endif %}">
+                                <div class="step-circle">1</div>
+                                <p>Pending</p>
+                            </div>
+
+                            <div class="order-step {% if order.status == 'Processing' or order.status == 'Shipped' or order.status == 'Delivered' %}active{% endif %}">
+                                <div class="step-circle">2</div>
+                                <p>Processing</p>
+                            </div>
+
+                            <div class="order-step {% if order.status == 'Shipped' or order.status == 'Delivered' %}active{% endif %}">
+                                <div class="step-circle">3</div>
+                                <p>Shipped</p>
+                            </div>
+
+                            <div class="order-step {% if order.status == 'Delivered' %}active{% endif %}">
+                                <div class="step-circle">4</div>
+                                <p>Delivered</p>
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+                    <hr>
+
+                    <h5 class="mt-4">Ordered Items</h5>
+
+                    <table class="table table-bordered text-center mt-3">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Qty</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for item in order.items.all %}
+                            <tr>
+                                <td>{{ item.product_name }}</td>
+                                <td>${{ item.price }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>${{ item.subtotal }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div class="text-end mt-3">
+                        <p><strong>Delivery Fee:</strong> ${{ order.delivery_fee }}</p>
+
+                        {% if order.coupon_code %}
+                        <p class="text-success">
+                            <strong>Coupon:</strong> {{ order.coupon_code }}
+                        </p>
+                        {% endif %}
+
+                        {% if order.discount_amount > 0 %}
+                        <p class="text-success">
+                            <strong>Discount:</strong> -${{ order.discount_amount }}
+                        </p>
+                        {% endif %}
+
+                        <h4><strong>Total:</strong> ${{ order.total_amount }}</h4>
+                    </div>
+
+                    <a href="{% url 'invoice' order.id %}" class="btn btn-success mt-3">
+                        View Invoice
+                    </a>
+
+                    {% if order.status == "Pending" or order.status == "Processing" %}
+                    <a href="{% url 'cancel_order' order.id %}" class="btn btn-danger mt-3">
+                        Cancel Order
+                    </a>
+                    {% else %}
+                    <p class="text-muted mt-3">
+                        This order cannot be cancelled now.
+                    </p>
+                    {% endif %}
+
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

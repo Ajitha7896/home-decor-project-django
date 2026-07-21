@@ -1,0 +1,75 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+
+<div class="container my-5 text-center">
+    <h1>Order Placed Successfully!</h1>
+
+    <p>Thank you for shopping with Home Decor.</p>
+
+    {% if order %}
+        <div class="card mx-auto mt-4" style="max-width: 750px;">
+            <div class="card-body">
+                <h4>Order Confirmation</h4>
+
+                <p><strong>Order ID:</strong> {{ order.id }}</p>
+                <p><strong>Name:</strong> {{ order.customer_name }}</p>
+                <p><strong>Email:</strong> {{ order.email }}</p>
+                <p><strong>Phone:</strong> {{ order.phone }}</p>
+                <p><strong>Payment Method:</strong> {{ order.payment_method }}</p>
+                <p><strong>Status:</strong> {{ order.status }}</p>
+
+                <h5 class="mt-4">Ordered Items</h5>
+
+                <table class="table table-bordered text-center mt-3">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for item in order.items.all %}
+                        <tr>
+                            <td>{{ item.product_name }}</td>
+                            <td>${{ item.price }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>${{ item.subtotal }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="text-end mt-3">
+                    <p><strong>Delivery Fee:</strong> ${{ order.delivery_fee }}</p>
+
+                    {% if order.coupon_code %}
+                    <p class="text-success">
+                        <strong>Coupon:</strong> {{ order.coupon_code }}
+                    </p>
+                    {% endif %}
+
+                    {% if order.discount_amount > 0 %}
+                    <p class="text-success">
+                        <strong>Discount:</strong> -${{ order.discount_amount }}
+                    </p>
+                    {% endif %}
+
+                    <h4><strong>Total Amount:</strong> ${{ order.total_amount }}</h4>
+                </div>
+            </div>
+        </div>
+
+        <a href="{% url 'invoice' order.id %}" class="btn btn-success mt-4">
+            View Invoice
+        </a>
+    {% endif %}
+
+    <a href="/products/" class="btn btn-dark mt-4">Continue Shopping</a>
+    <a href="/track-order/" class="btn btn-secondary mt-4">Track Order</a>
+</div>
+
+{% endblock %}
