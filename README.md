@@ -20,6 +20,7 @@ A home decor e-commerce website built using Python and Django.
 - CSS
 - JavaScript
 - SQLite
+- ![Home Decor Homepage](home-decor-homepage.png)
 
 ## Installation
 
